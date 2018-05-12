@@ -6,6 +6,12 @@ var removeAt = require('./utils').removeAt
 var isArray = require('mout/lang/isArray')
 var omit = require('mout/object/omit')
 var clone = require('mout/lang/clone')
+var addAndFlatten = function(results, value){
+  value.forEach(function(item){
+    results.push(item);
+  });
+  return results;
+};
 
 var BaseSecondaryIndex = {
 
@@ -77,18 +83,18 @@ var BaseSecondaryIndex = {
       for (let i = 0; i < this.values.length; i += 1) {
         let value = this.values[i]
         if (value.isIndex) {
-          results = results.concat(value.getAll(opts))
+          results = addAndFlatten(results, value.getAll(opts))
         } else {
-          results = results.concat(value)
+          results = addAndFlatten(results, value)
         }
       }
     } else if (opts.order === 'desc') {
       for (let i = this.values.length - 1; i >= 0; i -= 1) {
         let value = this.values[i]
         if (value.isIndex) {
-          results = results.concat(value.getAll(opts))
+          results = addAndFlatten(results, value.getAll(opts))
         } else {
-          results = results.concat(value)
+          results = addAndFlatten(results, value)
         }
       }
     } else {
@@ -183,9 +189,9 @@ var BaseSecondaryIndex = {
         }
 
         if (this.values[i].isIndex) {
-          results = results.concat(this.values[i].getAll())
+          results = addAndFlatten(results, this.values[i].getAll())
         } else {
-          results = results.concat(this.values[i])
+          results = addAndFlatten(results, this.values[i])
         }
 
         if (opts.limit) {
@@ -201,14 +207,14 @@ var BaseSecondaryIndex = {
 
         if (this.values[i].isIndex) {
           if (currKey === leftKey) {
-            results = results.concat(this.values[i]._betweenAsc(clone(leftKeys), rightKeys.map(function () { return undefined }), opts))
+            results = addAndFlatten(results, this.values[i]._betweenAsc(clone(leftKeys), rightKeys.map(function () { return undefined }), opts))
           } else if (currKey === rightKey) {
-            results = results.concat(this.values[i]._betweenAsc(leftKeys.map(function () { return undefined }), clone(rightKeys), opts))
+            results = addAndFlatten(results, this.values[i]._betweenAsc(leftKeys.map(function () { return undefined }), clone(rightKeys), opts))
           } else {
-            results = results.concat(this.values[i].getAll())
+            results = addAndFlatten(results, this.values[i].getAll())
           }
         } else {
-          results = results.concat(this.values[i])
+          results = addAndFlatten(results, this.values[i])
         }
 
         if (opts.limit) {
@@ -259,11 +265,11 @@ var BaseSecondaryIndex = {
         }
 
         if (this.values[i].isIndex) {
-          results = results.concat(this.values[i].getAll(opts))
+          results = addAndFlatten(results, this.values[i].getAll(opts))
         } else {
           let list = this.values[i].slice()
           list.reverse()
-          results = results.concat(list)
+          results = addAndFlatten(results, list)
         }
 
         if (opts.limit) {
@@ -279,16 +285,16 @@ var BaseSecondaryIndex = {
 
         if (this.values[i].isIndex) {
           if (currKey === rightKey) {
-            results = results.concat(this.values[i]._betweenDesc(leftKeys.map(function () { return undefined }), clone(rightKeys), opts))
+            results = addAndFlatten(results, this.values[i]._betweenDesc(leftKeys.map(function () { return undefined }), clone(rightKeys), opts))
           } else if (currKey === leftKey) {
-            results = results.concat(this.values[i]._betweenDesc(clone(leftKeys), rightKeys.map(function () { return undefined }), opts))
+            results = addAndFlatten(results, this.values[i]._betweenDesc(clone(leftKeys), rightKeys.map(function () { return undefined }), opts))
           } else {
-            results = results.concat(this.values[i].getAll(opts))
+            results = addAndFlatten(results, this.values[i].getAll(opts))
           }
         } else {
           let list = this.values[i].slice()
           list.reverse()
-          results = results.concat(list)
+          results = addAndFlatten(results, list)
         }
 
         if (opts.limit) {
